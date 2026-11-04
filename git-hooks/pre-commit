@@ -1,0 +1,9 @@
+#!/bin/sh
+# pe-dev-toolkit: blocks commits that corrupt GBK / UTF-8-BOM C/C++ sources.
+# install.ps1 replaces __CHECK_SCRIPT__ with the installed script path.
+CHECK="__CHECK_SCRIPT__"
+if [ ! -f "$CHECK" ]; then
+    echo "pe-dev-toolkit: encoding check script not found: $CHECK (re-run install.ps1); skipping." >&2
+    exit 0
+fi
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$CHECK" -RepoRoot "$(git rev-parse --show-toplevel)"
