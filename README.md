@@ -10,7 +10,6 @@ PE（PostEngineer）插件开发用的 AI 编码助手工具包：一组 [Agent 
 | `pe-scene-api` | skill（参考型） | Vs* 场景 API 的坑：INVALID_KEY、野 key、"当前节点"全局态致闪烁、重建丢贴图/阴影、光源绑定、阴影与 shader、.vob 存读、删除节点、车辙 |
 | `pe-plugin-lifecycle` | skill | RUN 重载插件与场景重置、不可靠的主消息、Tick 挂钩、多 Qt 插件共享 qApp 的消息钩子、行为图 pluginCall 参数规则 |
 | `git-hooks/pre-commit` | git hook | 提交前检查暂存的 C/C++/rc 文件：中文被毁、GBK 字节错位、BOM 损坏、新出现无 BOM UTF-8（MSVC 会按 GBK 编译）一律拦截 |
-
 | `pe-qt-plugin-scaffold` | skill + generator | Qt5/MFC/qtwinmigrate scaffold and PE command contracts |
 | `pe-crash-build-diagnosis` | skill | Native dump, MSVC/Qt/MFC build and plugin load diagnosis |
 
