@@ -1,0 +1,40 @@
+cmake_minimum_required(VERSION 3.15)
+project(@NAME@ LANGUAGES CXX)
+if(NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "This PE scaffold requires MSVC x64")
+endif()
+set(PE_SDK_ROOT "" CACHE PATH "PE SDK root containing Plugins/PESdk")
+set(QTWINMIGRATE_DIR "" CACHE PATH "Local qtwinmigrate source directory")
+if(NOT EXISTS "${PE_SDK_ROOT}/Plugins/PESdk/include/PluginCore/FxPluginApp.h")
+  message(FATAL_ERROR "Set PE_SDK_ROOT to the installed PE SDK root")
+endif()
+foreach(source qmfcapp.cpp qwinwidget.cpp qwinmainwindow.cpp)
+  if(NOT EXISTS "${QTWINMIGRATE_DIR}/${source}")
+    message(FATAL_ERROR "Missing qtwinmigrate source: ${source}")
+  endif()
+endforeach()
+set(CMAKE_MFC_FLAG 2)
+set(CMAKE_AUTOMOC ON)
+find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
+add_library(@NAME@ SHARED Plugin.cpp
+  "${QTWINMIGRATE_DIR}/qmfcapp.cpp"
+  "${QTWINMIGRATE_DIR}/qwinwidget.cpp"
+  "${QTWINMIGRATE_DIR}/qwinmainwindow.cpp"
+  "${QTWINMIGRATE_DIR}/qmfcapp.h"
+  "${QTWINMIGRATE_DIR}/qwinwidget.h"
+  "${QTWINMIGRATE_DIR}/qwinmainwindow.h")
+target_compile_features(@NAME@ PRIVATE cxx_std_11)
+target_compile_definitions(@NAME@ PRIVATE _AFXDLL _USRDLL _WINDOWS FXPLUGIN_EXPORTS _CRT_SECURE_NO_WARNINGS)
+target_include_directories(@NAME@ PRIVATE
+  "${PE_SDK_ROOT}/Plugins/PESdk"
+  "${PE_SDK_ROOT}/Plugins/PESdk/include"
+  "${QTWINMIGRATE_DIR}")
+target_link_directories(@NAME@ PRIVATE
+  "${PE_SDK_ROOT}/Plugins/PESdk/lib/x64"
+  "${PE_SDK_ROOT}/lib/$<CONFIG>-x64")
+target_link_libraries(@NAME@ PRIVATE optimized mfcs140 debug mfcs140d Qt5::Core Qt5::Gui Qt5::GuiPrivate Qt5::Widgets
+  optimized FxLibCore debug FxLibCored
+  optimized FxLibPlugin debug FxLibPlugind
+  optimized FxLibCoreMfc debug FxLibCoreMfcd
+  optimized FxLibPluginMfc debug FxLibPluginMfcd)
+set_target_properties(@NAME@ PROPERTIES PREFIX "" SUFFIX ".plu")

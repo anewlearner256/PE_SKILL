@@ -1,0 +1,97 @@
+// Generated PE Qt5/MFC plugin. All host commands execute on the UI thread.
+#include <afxwin.h>
+#include "PluginCore/FxPluginWrapper.h"
+#include "PluginCore/FxPluginApp.h"
+#include "UtilCore/Kernel/FxModuleState.h"
+#include "qmfcapp.h"
+#include <QApplication>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QWidget>
+
+class PluginPanel : public QWidget {
+public:
+    PluginPanel() {
+        setWindowTitle(QStringLiteral("@NAME@"));
+        setAttribute(Qt::WA_DeleteOnClose, false);
+        auto* layout = new QVBoxLayout(this);
+        label = new QLabel(QStringLiteral("Ready"), this);
+        layout->addWidget(label);
+    }
+    void ApiSetText(const char* text) {
+        if (text) label->setText(QString::fromLocal8Bit(text));
+    }
+private:
+    QLabel* label = nullptr;
+};
+
+class CMyPluginApp : public CMFCPluginApp {
+public:
+    BOOL InitInstance() override {
+        if (!CMFCPluginApp::InitInstance()) return FALSE;
+        if (!qApp) {
+            QMfcApp::instance(this);
+            QMfcApp::installMessageHook();
+        }
+        panel = new PluginPanel;
+        return TRUE;
+    }
+    int ExitInstance() override {
+        // Stop any added timers/ticks/callbacks before destroying owned widgets.
+        delete panel;
+        panel = nullptr;
+        return CMFCPluginApp::ExitInstance();
+    }
+    virtual int run(CWinApp*) { return QMfcApp::run(this); }
+    PluginPanel* panel = nullptr;
+    DECLARE_MESSAGE_MAP()
+};
+BEGIN_MESSAGE_MAP(CMyPluginApp, CMFCPluginApp)
+END_MESSAGE_MAP()
+CMyPluginApp theApp;
+static sPluginClassID pluginClassId(@CLASS_A@, @CLASS_B@);
+
+FXSDK_API_C void func@NAME@Show(FX_PTR = 0) {
+    FX_DECLARE_RESOURCE_DLL
+    if (!theApp.panel) return;
+    theApp.panel->show();
+    theApp.panel->raise();
+    theApp.panel->activateWindow();
+}
+// Contract: one quoted, local-code-page string; NULL ignored, empty clears.
+FXSDK_API_C void func@NAME@SetText(FX_PTR value = 0) {
+    FX_DECLARE_RESOURCE_DLL
+    if (theApp.panel && value)
+        theApp.panel->ApiSetText(reinterpret_cast<const char*>(value));
+}
+static LRESULT messageProc(UINT message, WPARAM wParam, LPARAM lParam) {
+    FX_DECLARE_RESOURCE_DLL
+    theApp.messageProc(message, wParam, lParam);
+    return 0;
+}
+static BOOL filterDllMsg(LPMSG msg) {
+    FX_DECLARE_RESOURCE_DLL
+    if (qApp && QMfcApp::handlePluginMessage(msg)) {
+        msg->message = WM_NULL;
+        msg->wParam = 0;
+        msg->lParam = 0;
+        return TRUE;
+    }
+    return FxLib::Thread::FxFilterDllMsg(msg);
+}
+FXSDK_API int FxPluginDLL_Init(void* context) {
+    if (!context) return 0;
+    PluginInfo* dll = static_cast<PluginInfo*>(context);
+    dll->Init();
+    dll->SetProperty("Author", "PE plugin developer");
+    dll->SetProperty("Summary", "@NAME@");
+    dll->SetProperty("Description", "Qt5 MFC plugin");
+    dll->SetProperty("Version", 100);
+    dll->SetProperty("ClassID", reinterpret_cast<DWORD_PTR>(&pluginClassId));
+    dll->SetProperty("dllMessageProc", reinterpret_cast<DWORD_PTR>(messageProc));
+    dll->SetProperty("dllFilterMsgProc", reinterpret_cast<DWORD_PTR>(filterDllMsg));
+    dll->AddCmd(func@NAME@Show, "@NAME@", true, false);
+    dll->AddCmd(func@NAME@Show, "func@NAME@Show", false, false);
+    dll->AddCmd(func@NAME@SetText, "func@NAME@SetText", false, false);
+    return 1;
+}

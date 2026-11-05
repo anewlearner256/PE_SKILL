@@ -1,0 +1,13 @@
+# @NAME@
+
+Generated Qt5/MFC/qtwinmigrate PE plugin. Requires the local PE SDK and compatible Qt5.
+
+Configure with CMake using PE_SDK_ROOT, QTWINMIGRATE_DIR and CMAKE_PREFIX_PATH as documented in the scaffold skill. Use x64/v141 and the same Debug/Release ABI as the host. Sources are UTF-8 BOM. No deployment occurs automatically.
+
+Commands:
+- func@NAME@Show: show the owned panel.
+- func@NAME@SetText: one quoted string in the host local code page; null ignored, empty clears; does not show the panel.
+
+Example behavior call: pluginCall("@NAME@", "func@NAME@SetText", "Hello").
+
+Before deployment verify SDK library names/paths, Qt and CRT compatibility, exported FxPluginDLL_Init, actual loaded PLU path, two Qt plugins together and RUN reload. Add project business logic behind the panel adapter rather than copying command argument decoding into UI handlers.

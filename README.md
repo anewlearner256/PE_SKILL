@@ -9,7 +9,12 @@ PE（PostEngineer）插件开发用的 AI 编码助手工具包：一组 [Agent 
 | `gbk-safe-edit` | skill + 脚本 | AI 编辑工具按 UTF-8 读写，改 GBK 源文件会把全文件中文毁成"锟斤拷"；提供按字节安全读/改/建/转换 GBK 文件的脚本 |
 | `git-hooks/pre-commit` | git hook | 提交前检查暂存的 C/C++/rc 文件：中文被毁、GBK 字节错位、BOM 损坏、新出现无 BOM UTF-8（MSVC 会按 GBK 编译）一律拦截 |
 
-后续计划：PE 场景 API 踩坑集、PE 运行时序、Qt 插件脚手架、闪退 dump 排查、编译问题排查。
+| `pe-qt-plugin-scaffold` | skill + generator | Qt5/MFC/qtwinmigrate scaffold and PE command contracts |
+| `pe-crash-build-diagnosis` | skill | Native dump, MSVC/Qt/MFC build and plugin load diagnosis |
+
+Future work: PE runtime MCP.
+
+Qt scaffolds additionally require Python 3.10+, CMake 3.15+, VS C++/MFC, Qt5 and the local PE SDK. See skills/pe-qt-plugin-scaffold/SKILL.md. SDK sources are not bundled.
 
 ## 环境要求
 
